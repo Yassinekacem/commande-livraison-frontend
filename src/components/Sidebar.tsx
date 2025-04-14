@@ -22,7 +22,13 @@ const Sidebar = () => {
             <FaBox className="mr-2" /> Commandes
           </Link>
         </li>
+ 
 
+        <li>
+          <Link href="/transporteurs" className="flex items-center hover:text-blue-300">
+            <FaBox className="mr-2" /> Transporteurs
+          </Link>
+        </li>
 
    
       </ul>

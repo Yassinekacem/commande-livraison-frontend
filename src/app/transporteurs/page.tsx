@@ -1,43 +1,43 @@
-'use client'; // Important pour les hooks React
+'use client';
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import ClientTable from '@/components/ClientTable';
 import Link from 'next/link';
+import TransporteurTable from '@/components/TransporteurTable';
 
-interface Client {
+interface Transporteur {
   id: number;
   nom: string;
-  email: string;
-  adresse: string;
+  telephone: string;
+  note: number;
 }
 
-export default function ClientsPage() {
-  const [clients, setClients] = useState<Client[]>([]);
+export default function TransporteursPage() {
+  const [transporteurs, setTransporteurs] = useState<Transporteur[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchClients = async () => {
+    const fetchTransporteurs = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/clients');
-        setClients(response.data);
+        const response = await axios.get('http://localhost:8080/api/transporteurs');
+        setTransporteurs(response.data);
       } catch (err) {
-        setError('Erreur lors du chargement des clients');
+        setError('Erreur lors du chargement des transporteurs');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchClients();
-  }, []);
+    fetchTransporteurs();
+  }, []); 
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await axios.delete(`http://localhost:8080/api/clients/${id}`);
+      const response = await axios.delete(`http://localhost:8080/api/transporteurs/${id}`);
       console.log(response.data); // Ajouté pour le débogage
-      setClients(clients.filter(client => client.id !== id));
+      setTransporteurs(transporteurs.filter(t => t.id !== id));
     } catch (err) {
       console.error("Erreur lors de la suppression:", err);
       alert("Erreur lors de la suppression");
@@ -50,15 +50,15 @@ export default function ClientsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Liste des Clients</h1>
+        <h1 className="text-2xl font-bold">Liste des Transporteurs</h1>
         <Link
-          href="/clients/add-client"
+          href="/transporteurs/add-transporteur"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
-          Ajouter un Client
+          Ajouter un Transporteur
         </Link>
       </div>
-      <ClientTable clients={clients} onDelete={handleDelete} />
+      <TransporteurTable transporteurs={transporteurs} onDelete={handleDelete} />
     </div>
   );
 }

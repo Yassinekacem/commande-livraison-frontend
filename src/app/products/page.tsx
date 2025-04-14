@@ -9,7 +9,7 @@ interface Produit {
   id: number;
   nom: string;
   stockActuel: number;
-  description: string; // Correction du typo "desscription" → "description"
+  description: string;
 }
 
 export default function ProductsPage() {
@@ -33,6 +33,16 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
+  const handleDelete = async (id: number) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/produits/${id}`);
+      setProducts(products.filter(product => product.id !== id));
+    } catch (err) {
+      console.error("Erreur lors de la suppression:", err);
+      alert("Erreur lors de la suppression du produit");
+    }
+  };
+
   if (loading) return <div>Chargement...</div>;
   if (error) return <div>{error}</div>;
 
@@ -40,18 +50,14 @@ export default function ProductsPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Liste des Produits</h1>
-        <button
+        <Link
+          href="/products/add-product"
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={() => {/* Logique d'ajout ici */}}
         >
-<Link
-  href="/products/add-product"
-  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
->
-  Ajouter un Produit
-</Link>        </button>
+          Ajouter un Produit
+        </Link>
       </div>
-      <ProductTable products={products} />
+      <ProductTable products={products} onDelete={handleDelete} />
     </div>
   );
 }
