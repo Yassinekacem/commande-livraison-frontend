@@ -1,20 +1,19 @@
 import Link from 'next/link';
 
-interface Client {
+interface Fournisseur {
   id: number;
   nom: string;
-  email: string;
   adresse: string;
 }
 
-interface ClientTableProps {
-  clients: Client[];
+interface FournisseurTableProps {
+  fournisseurs: Fournisseur[];
   onDelete?: (id: number) => void;
 }
 
-export default function ClientTable({ clients, onDelete }: ClientTableProps) {
-  if (clients.length === 0) {
-    return <div>Aucun client à afficher</div>;
+export default function FournisseurTable({ fournisseurs, onDelete }: FournisseurTableProps) {
+  if (fournisseurs.length === 0) {
+    return <div>Aucun fournisseur à afficher</div>;
   }
 
   return (
@@ -24,40 +23,36 @@ export default function ClientTable({ clients, onDelete }: ClientTableProps) {
           <tr>
             <th className="px-4 py-2 border">ID</th>
             <th className="px-4 py-2 border">Nom</th>
-            <th className="px-4 py-2 border">Email</th>
             <th className="px-4 py-2 border">Adresse</th>
             <th className="px-4 py-2 border">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {clients.map((client) => (
-            <tr key={client.id} className="hover:bg-gray-50">
-              <td className="px-4 py-2 border">{client.id}</td>
-              <td className="px-4 py-2 border">{client.nom}</td>
-              <td className="px-4 py-2 border">{client.email}</td>
-              <td className="px-4 py-2 border">{client.adresse}</td>
+          {fournisseurs.map((fournisseur) => (
+            <tr key={fournisseur.id} className="hover:bg-gray-50">
+              <td className="px-4 py-2 border">{fournisseur.id}</td>
+              <td className="px-4 py-2 border">{fournisseur.nom}</td>
+              <td className="px-4 py-2 border">{fournisseur.adresse}</td>
               <td className="px-4 py-2 border">
-                <div className="flex space-x-2"> 
-
-
-                <Link
-  href={`/clients/${client.id}`}
-  className="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600"
->
-  Détails
-</Link>
+                <div className="flex space-x-2">
+                  <Link
+                    href={`/fournisseurs/${fournisseur.id}`}
+                    className="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600"
+                  >
+                    Détails
+                  </Link>
 
                   <Link
-                    href={`/clients/edit/${client.id}`}
+                    href={`/fournisseurs/edit/${fournisseur.id}`}
                     className="bg-yellow-500 text-white px-2 py-1 rounded text-sm hover:bg-yellow-600"
                   >
                     Modifier
                   </Link>
                   <button
                     onClick={() => {
-                      if (confirm('Voulez-vous vraiment supprimer ce client ?')) {
+                      if (confirm('Voulez-vous vraiment supprimer ce fournisseur ?')) {
                         if (onDelete) {
-                          onDelete(client.id);
+                          onDelete(fournisseur.id);
                         }
                       }
                     }}

@@ -48,8 +48,8 @@ export default function CommandeTable({ commandes, onDelete }: CommandeTableProp
               <td className="px-4 py-2 border">{commande.date}</td>
               <td className="px-4 py-2 border">
                 <span className={`px-2 py-1 rounded-full text-xs ${
-                  commande.statut === 'livrée' ? 'bg-green-100 text-green-800' :
-                  commande.statut === 'annulée' ? 'bg-red-100 text-red-800' :
+                  commande.statut === 'Payée' ? 'bg-green-100 text-green-800' :
+                  commande.statut === 'Non payée' ? 'bg-red-100 text-red-800' :
                   'bg-yellow-100 text-yellow-800'
                 }`}>
                   {commande.statut}

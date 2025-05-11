@@ -4,15 +4,30 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-export default function EditProductPage({params }: { params: { id: string } }) {
+interface Fournisseur {
+  id: number;
+  nom: string;
+}
+
+export default function EditProductPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { id } = params; // Récupération de l'ID du produit à partir des paramètres d'URL
+  const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
   const [formData, setFormData] = useState({
     nom: '',
     stockActuel: 0,
-    description: ''
+    description: '',
+    fournisseurId: 0 // Nouvel attribut
   });
 
+  // Récupérer la liste des fournisseurs
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/fournisseurs')
+      .then(response => setFournisseurs(response.data))
+      .catch(error => console.error('Erreur lors du chargement des fournisseurs:', error));
+  }, []);
+
+  // Récupérer les données du produit
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -29,9 +44,13 @@ export default function EditProductPage({params }: { params: { id: string } }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
-      await axios.put(`http://localhost:8080/api/produits/${id}`, formData);
+      await axios.put(`http://localhost:8080/api/produits/${id}`, {
+        nom: formData.nom,
+        stockActuel: Number(formData.stockActuel),
+        description: formData.description,
+        fournisseurId: Number(formData.fournisseurId) // Envoi uniquement le fournisseurId
+      });
       router.push('/products'); // Redirection après succès
     } catch (error) {
       console.error("Erreur lors de la mise à jour:", error);
@@ -39,11 +58,11 @@ export default function EditProductPage({params }: { params: { id: string } }) {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'stockActuel' ? Number(value) : value
     }));
   };
 
@@ -92,6 +111,26 @@ export default function EditProductPage({params }: { params: { id: string } }) {
             className="w-full p-2 border rounded"
             required
           />
+        </div>
+
+        {/* Champ Fournisseur */}
+        <div>
+          <label htmlFor="fournisseurId" className="block mb-1">Fournisseur</label>
+          <select
+            id="fournisseurId"
+            name="fournisseurId"
+            value={formData.fournisseurId}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          >
+            <option value={0}>-- Sélectionner un fournisseur --</option>
+            {fournisseurs.map((fournisseur: Fournisseur) => (
+              <option key={fournisseur.id} value={fournisseur.id}>
+                {fournisseur.nom}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Boutons */}

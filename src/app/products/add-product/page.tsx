@@ -1,30 +1,49 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
+import axios from 'axios'; 
+
+interface Fournisseur {
+  id: number;
+  nom: string;
+  adresse: string;
+}
 
 export default function AddProductPage() {
   const router = useRouter();
+  const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
   const [formData, setFormData] = useState({
     nom: '',
     stockActuel: 0,
-    description: '' // Note: Adaptez selon le nom exact dans votre API
+    description: '',
+    fournisseurId: 0 // Nouvel attribut
   });
+
+  // Récupérer la liste des fournisseurs
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/fournisseurs')
+      .then(response => setFournisseurs(response.data))
+      .catch(error => console.error('Erreur lors du chargement des fournisseurs:', error));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     try {
-      await axios.post('http://localhost:8080/api/produits', formData);
-      router.push('/products'); // Redirection après succès
+      await axios.post('http://localhost:8080/api/produits', {
+        nom: formData.nom,
+        stockActuel: Number(formData.stockActuel),
+        description: formData.description,
+        fournisseurId: Number(formData.fournisseurId) // Envoi uniquement le fournisseurId
+      });
+      router.push('/products');
     } catch (error) {
       console.error("Erreur lors de l'ajout:", error);
       alert("Erreur lors de l'ajout du produit");
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -37,7 +56,6 @@ export default function AddProductPage() {
       <h1 className="text-2xl font-bold mb-6">Ajouter un Produit</h1>
       
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Champ Nom */}
         <div>
           <label htmlFor="nom" className="block mb-1">Nom</label>
           <input
@@ -51,7 +69,6 @@ export default function AddProductPage() {
           />
         </div>
 
-        {/* Champ Stock */}
         <div>
           <label htmlFor="stockActuel" className="block mb-1">Stock Actuel</label>
           <input
@@ -66,7 +83,6 @@ export default function AddProductPage() {
           />
         </div>
 
-        {/* Champ Description */}
         <div>
           <label htmlFor="description" className="block mb-1">Description</label>
           <textarea
@@ -80,7 +96,26 @@ export default function AddProductPage() {
           />
         </div>
 
-        {/* Boutons */}
+        {/* Champ fournisseur */}
+        <div>
+          <label htmlFor="fournisseurId" className="block mb-1">Fournisseur</label>
+          <select
+            id="fournisseurId"
+            name="fournisseurId"
+            value={formData.fournisseurId}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          >
+            <option value={0}>-- Sélectionner un fournisseur --</option>
+            {fournisseurs.map((fournisseur: Fournisseur) => (
+              <option key={fournisseur.id} value={fournisseur.id}>
+                {fournisseur.nom}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="flex space-x-4">
           <button
             type="submit"
@@ -88,7 +123,6 @@ export default function AddProductPage() {
           >
             Enregistrer
           </button>
-          
           <button
             type="button"
             onClick={() => router.push('/products')}
