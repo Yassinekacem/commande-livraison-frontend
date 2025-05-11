@@ -13,7 +13,7 @@ const Sidebar = () => {
     <div className="w-64 h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white shadow-lg p-6 flex flex-col">
       <div className="mb-10">
         <h1 className="text-3xl font-extrabold tracking-wide text-center text-blue-400">
-          Delivera
+          Kacem Delivery
         </h1>
         <p className="text-center text-sm text-gray-400">Dashboard</p>
       </div>
